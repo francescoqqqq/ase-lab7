@@ -1,0 +1,39 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Scarica il codice del repo
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      # 2. Prepara Node 22
+      - name: Setup Node.js 22
+        uses: actions/setup-node@v7
+        with:
+          node-version: 22
+
+      # 3. Installa la CLI di Bruno 
+      - name: Install Bruno CLI
+        run: npm install -g @usebruno/cli@4.3.0
+
+      # 4. Accendi calc e il suo stub
+      - name: Start calc and stub
+        run: docker compose up -d --build -f --wait
+
+      # 5. Lancia i test Bruno da tests/bruno con environment calc-component
+      - name: Run Bruno tests
+        working-directory: tests/bruno
+        run: |
+          bru run calc calc-stub --env calc-component
+
+      # 6. Spegni lo stack in ogni caso (anche se i test falliscono)
+      - name: Stop stack
+        if: always()
+        run: docker compose down -f
