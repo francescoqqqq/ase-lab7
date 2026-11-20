@@ -25,7 +25,7 @@ jobs:
 
       # 4. Accendi calc e il suo stub
       - name: Start calc and stub
-        run: docker compose -f compose.string.yaml up --build -d --wait
+        run: docker compose -f compose.calc.yaml up --build -d --wait
 
       # 5. Lancia i test Bruno da tests/bruno con environment calc-component
       - name: Run Bruno tests
