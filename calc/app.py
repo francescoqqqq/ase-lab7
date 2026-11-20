@@ -1,7 +1,7 @@
 """Calculation service: execute add/div and notify history directly."""
 import os
 
-import requests # type: ignore
+import requests
 from flask import Flask, jsonify, request
 from operations import add, divide
 
@@ -51,7 +51,7 @@ def execute():
 
     value = add(*arguments) if kind == "add" else divide(*arguments)
     record = {"operation": kind, "arguments": arguments, "result": value}
-    failure = None
+    failure = notify_history(record)
     if failure is not None:
         return failure
     return jsonify(record), 200
