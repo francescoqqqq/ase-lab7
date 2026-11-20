@@ -28,12 +28,48 @@ jobs:
         run: docker compose -f compose.calc.yaml up --build -d --wait
 
       # 5. Lancia i test Bruno da tests/bruno con environment calc-component
-      - name: Run Bruno tests
+      - name: Component tests of calc
         working-directory: tests/bruno
         run: |
           bru run calc calc-stub --env calc-component
 
       # 6. Spegni lo stack in ogni caso (anche se i test falliscono)
-      - name: Stop stack
+      - name: Stop calc and stub
         if: always()
         run: docker compose -f compose.calc.yaml down
+
+      # 7. Accendi string e il suo stub
+      - name: Start string and stub
+        run: docker compose -f compose.string.yaml up --build -d --wait
+
+      # 8. Lancia i test Bruno da tests/bruno con environment string-component
+      - name: Component tests of string
+        working-directory: tests/bruno
+        run: |
+          bru run string string-stub --env string-component
+
+      # 9. Spegni lo stack in ogni caso (anche se i test falliscono)
+      - name: Stop string and stub
+        if: always()
+        run: docker compose -f compose.string.yaml down
+
+      # 10. Accendi tutta l'app
+      - name: Start application
+        run: docker compose up --build -d --wait
+
+      # 11. Lancia i test Bruno da tests/bruno su calc string con integration
+      - name: Integration tests
+        working-directory: tests/bruno
+        run: |
+          bru run string calc --env integration
+
+      # 12. scrivi log se qualcosa fallisce
+      - name: log fallimento
+        if: failure()
+        run: |
+          docker compose logs
+
+      # 13. Spegni lo stack in ogni caso (anche se i test falliscono)
+      - name: Stop application
+        if: always()
+        run: docker compose down
