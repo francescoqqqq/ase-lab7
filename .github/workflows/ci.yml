@@ -36,4 +36,4 @@ jobs:
       # 6. Spegni lo stack in ogni caso (anche se i test falliscono)
       - name: Stop stack
         if: always()
-        run: docker compose down -f
+        run: docker compose -f compose.calc.yaml down
